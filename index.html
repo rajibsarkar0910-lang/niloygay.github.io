@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineStream - Stream Limitless</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            900: '#4c1d95',
+                            950: '#0f0f12', // Deep dark background
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f0f12;
+            color: #ffffff;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4c1d95;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7c3aed;
+        }
+
+        /* Movie Card Hover Effect */
+        .movie-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hide scrollbar for horizontal scroll area but keep functionality */
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 px-6 lg:px-12">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-8 h-8 bg-gradient-to-tr from-brand-600 to-pink-500 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform">
+                    <i class="fas fa-play text-white text-xs"></i>
+                </div>
+                <span class="text-2xl font-black tracking-tighter">CineStream</span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#trending" class="hover:text-white transition-colors">Trending</a>
+                <a href="#pricing" class="hover:text-white transition-colors">Plans</a>
+                <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+            </div>
+
+            <!-- CTA -->
+            <div class="hidden md:flex items-center gap-4">
+                <a href="#" class="text-sm font-medium text-gray-300 hover:text-white">Log In</a>
+                <button class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(124,58,237,0.5)]">
+                    Start Free Trial
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-2xl text-white">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black/95 z-40 transform translate-x-full transition-transform duration-300 flex flex-col items-center justify-center space-y-8">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-3xl text-gray-400 hover:text-white">
+            <i class="fas fa-times"></i>
+        </button>
+        <a href="#features" class="text-2xl font-bold hover:text-brand-500 mobile-link">Features</a>
+        <a href="#trending" class="text-2xl font-bold hover:text-brand-500 mobile-link">Trending</a>
+        <a href="#pricing" class="text-2xl font-bold hover:text-brand-500 mobile-link">Plans</a>
+        <button class="bg-brand-600 text-white px-8 py-3 rounded-full text-xl font-bold">Get the App</button>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <!-- Background Glows -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-brand-600/20 rounded-full blur-[128px]"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-600/10 rounded-full blur-[128px]"></div>
+
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center relative z-10">
+            <!-- Hero Text -->
+            <div class="space-y-8 text-center lg:text-left animate-fade-in-up">
+                <div class="inline-block px-4 py-1.5 rounded-full border border-gray-700 bg-gray-900/50 backdrop-blur-sm text-sm font-medium text-brand-100 mb-2">
+                    <i class="fas fa-star text-yellow-400 mr-2"></i> #1 Rated Streaming App of 2024
+                </div>
+                <h1 class="text-5xl lg:text-7xl font-black leading-tight">
+                    Cinematic Magic in <br>
+                    <span class="text-gradient">Your Pocket.</span>
+                </h1>
+                <p class="text-lg text-gray-400 max-w-xl mx-auto lg:mx-0">
+                    Stream thousands of movies, TV shows, and exclusive originals in 4K HDR. No ads. Cancel anytime. Download for offline viewing.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <button class="flex items-center justify-center gap-3 bg-white text-black px-6 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                        <i class="fab fa-apple text-xl"></i>
+                        <div class="text-left leading-tight">
+                            <div class="text-[10px] uppercase tracking-wide">Download on the</div>
+                            <div class="text-sm">App Store</div>
+                        </div>
+                    </button>
+                    <button class="flex items-center justify-center gap-3 bg-transparent border border-gray-700 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-gray-800 transition-colors">
+                        <i class="fab fa-google-play text-xl text-brand-500"></i>
+                        <div class="text-left leading-tight">
+                            <div class="text-[10px] uppercase tracking-wide">Get it on</div>
+                            <div class="text-sm">Google Play</div>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="pt-4 flex items-center justify-center lg:justify-start gap-6 text-sm text-gray-500">
+                    <span class="flex items-center gap-2"><i class="fas fa-check text-brand-500"></i> Free 30-day trial</span>
+                    <span class="flex items-center gap-2"><i class="fas fa-check text-brand-500"></i> No credit card req.</span>
+                </div>
+            </div>
+
+            <!-- Hero Image / Mockup -->
+            <div class="relative hidden lg:block animate-float">
+                <!-- Phone Frame -->
+                <div class="relative mx-auto border-gray-800 bg-gray-900 border-[8px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl overflow-hidden ring-1 ring-white/10">
+                    <!-- Screen Content -->
+                    <div class="h-full w-full bg-[#0f0f12] overflow-hidden relative">
+                        <!-- App Header -->
+                        <div class="absolute top-0 w-full p-4 flex justify-between items-center z-20 bg-gradient-to-b from-black/80 to-transparent">
+                            <span class="font-bold text-lg">CineStream</span>
+                            <i class="fas fa-search"></i>
+                        </div>
+                        
+                        <!-- Featured Movie in App -->
+                        <div class="h-2/3 w-full bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000&auto=format&fit=crop');">
+                            <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-[#0f0f12] to-transparent pt-20">
+                                <span class="text-xs font-bold text-red-500 uppercase tracking-widest">New Release</span>
+                                <h3 class="text-2xl font-bold mt-1">Cyber Future</h3>
+                                <div class="flex gap-2 mt-2">
+                                    <button class="flex-1 bg-white text-black py-2 rounded font-bold text-sm"><i class="fas fa-play mr-1"></i> Play</button>
+                                    <button class="bg-gray-800/80 text-white p-2 rounded"><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Continue Watching List -->
+                        <div class="p-4">
+                            <h4 class="font-bold text-sm mb-3">Continue Watching</h4>
+                            <div class="flex gap-3 overflow-hidden">
+                                <div class="w-24 h-32 rounded bg-gray-800 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=200');"></div>
+                                <div class="w-24 h-32 rounded bg-gray-800 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=200');">
+                                    <div class="w-full h-full bg-black/50 flex items-center justify-center">
+                                        <i class="fas fa-play-circle text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Floating Elements behind phone -->
+                <div class="absolute top-20 -right-12 bg-gray-800/80 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-xl animate-pulse">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center font-bold">98%</div>
+                        <div>
+                            <div class="text-xs text-gray-400">Match Score</div>
+                            <div class="font-bold text-sm">Recommended for you</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Brands -->
+    <section class="py-10 border-y border-white/5 bg-black/20">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="text-center text-gray-500 text-sm mb-6 uppercase tracking-widest">Streaming Partners</p>
+            <div class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale transition-all duration-500 hover:grayscale-0 hover:opacity-100">
+                <!-- Using FontAwesome for mock logos -->
+                <div class="flex items-center gap-2 text-xl font-bold"><i class="fab fa-hooli"></i> HOOLI</div>
+                <div class="flex items-center gap-2 text-xl font-bold"><i class="fab fa-pied-piper-pp"></i> PIED PIPER</div>
+                <div class="flex items-center gap-2 text-xl font-bold"><i class="fab fa-aviato"></i> AVIATO</div>
+                <div class="flex items-center gap-2 text-xl font-bold"><i class="fas fa-dragon"></i> MASSIVE</div>
+                <div class="flex items-center gap-2 text-xl font-bold"><i class="fas fa-cube"></i> ACME CORP</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Section -->
+    <section id="trending" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end">
+            <div>
+                <h2 class="text-3xl font-bold mb-2">Trending Now</h2>
+                <p class="text-gray-400">Top picks for you this week.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="scrollTrending(-300)" class="w-10 h-10 rounded-full border border-gray-700 hover:bg-white hover:text-black transition-colors flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="scrollTrending(300)" class="w-10 h-10 rounded-full border border-gray-700 hover:bg-white hover:text-black transition-colors flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Movie Carousel -->
+        <div id="movie-scroll" class="flex gap-6 overflow-x-auto hide-scroll px-6 lg:px-[calc((100vw-80rem)/2)] pb-12">
+            <!-- Card 1 -->
+            <div class="movie-card min-w-[200px] md:min-w-[240px] cursor-pointer group relative rounded-xl overflow-hidden aspect-[2/3]">
+                <img src="https://images.unsplash.com/photo-1535016120720-40c6874c3b1c?auto=format&fit=crop&w=500" alt="Movie" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <span class="text-green-400 font-bold text-xs mb-1">98% Match</span>
+                    <h3 class="font-bold text-lg leading-tight">The Mountains</h3>
+                    <p class="text-xs text-gray-300 mt-1">Adventure • 2h 14m</p>
+                    <button class="mt-3 w-full bg-white text-black py-2 rounded font-bold text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Watch
+                    </button>
+                </div>
+            </div>
+
+             <!-- Card 2 -->
+             <div class="movie-card min-w-[200px] md:min-w-[240px] cursor-pointer group relative rounded-xl overflow-hidden aspect-[2/3]">
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&w=500" alt="Movie" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <span class="text-green-400 font-bold text-xs mb-1">95% Match</span>
+                    <h3 class="font-bold text-lg leading-tight">Neon City</h3>
+                    <p class="text-xs text-gray-300 mt-1">Sci-Fi • 1h 45m</p>
+                     <button class="mt-3 w-full bg-white text-black py-2 rounded font-bold text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Watch
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="movie-card min-w-[200px] md:min-w-[240px] cursor-pointer group relative rounded-xl overflow-hidden aspect-[2/3]">
+                <img src="https://images.unsplash.com/photo-1478720568477-152d9b164e63?auto=format&fit=crop&w=500" alt="Movie" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <span class="text-green-400 font-bold text-xs mb-1">92% Match</span>
+                    <h3 class="font-bold text-lg leading-tight">Soul Music</h3>
+                    <p class="text-xs text-gray-300 mt-1">Documentary • 1h 20m</p>
+                     <button class="mt-3 w-full bg-white text-black py-2 rounded font-bold text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Watch
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="movie-card min-w-[200px] md:min-w-[240px] cursor-pointer group relative rounded-xl overflow-hidden aspect-[2/3]">
+                <img src="https://images.unsplash.com/photo-1616530940355-351fabd9524b?auto=format&fit=crop&w=500" alt="Movie" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <span class="text-green-400 font-bold text-xs mb-1">89% Match</span>
+                    <h3 class="font-bold text-lg leading-tight">The Void</h3>
+                    <p class="text-xs text-gray-300 mt-1">Horror • 1h 55m</p>
+                     <button class="mt-3 w-full bg-white text-black py-2 rounded font-bold text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Watch
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="movie-card min-w-[200px] md:min-w-[240px] cursor-pointer group relative rounded-xl overflow-hidden aspect-[2/3]">
+                <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&w=500" alt="Movie" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <span class="text-green-400 font-bold text-xs mb-1">99% Match</span>
+                    <h3 class="font-bold text-lg leading-tight">Forest Life</h3>
+                    <p class="text-xs text-gray-300 mt-1">Nature • 55m</p>
+                     <button class="mt-3 w-full bg-white text-black py-2 rounded font-bold text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i> Watch
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why CineStream?</h2>
+                <p class="text-gray-400">Experience entertainment without limits. Designed for the modern viewer.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-8 rounded-2xl bg-gray-900 border border-gray-800 hover:border-brand-600 transition-colors group">
+                    <div class="w-14 h-14 bg-brand-900/50 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-download text-2xl text-brand-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Download & Go</h3>
+                    <p class="text-gray-400">Save your favorites to your device and watch offline on planes, trains, or submarines.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-8 rounded-2xl bg-gray-900 border border-gray-800 hover:border-brand-600 transition-colors group">
+                    <div class="w-14 h-14 bg-brand-900/50 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-tv text-2xl text-brand-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">4K UHD & HDR</h3>
+                    <p class="text-gray-400">Experience cinema-quality visuals with Dolby Vision and Dolby Atmos support.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-8 rounded-2xl bg-gray-900 border border-gray-800 hover:border-brand-600 transition-colors group">
+                    <div class="w-14 h-14 bg-brand-900/50 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-users text-2xl text-brand-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Profiles for Everyone</h3>
+                    <p class="text-gray-400">Create up to 5 profiles for your family. Personalized recommendations for each user.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing / CTA Section -->
+    <section id="pricing" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-brand-900/20 blur-[100px]"></div>
+        <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-6">Ready to start watching?</h2>
+            <p class="text-xl text-gray-300 mb-10">Join millions of subscribers today. Cancel anytime.</p>
+            
+            <div class="bg-gray-900 border border-gray-800 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+                <div class="text-left">
+                    <h3 class="text-2xl font-bold">Premium Plan</h3>
+                    <div class="text-4xl font-bold text-brand-500 mt-2">$12.99<span class="text-base text-gray-500 font-normal">/month</span></div>
+                    <p class="text-gray-400 mt-2">4K Quality + 4 Screens</p>
+                </div>
+                
+                <ul class="text-left space-y-3">
+                    <li class="flex items-center gap-3"><i class="fas fa-check-circle text-green-500"></i> Ad-free streaming</li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check-circle text-green-500"></i> Offline downloads</li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check-circle text-green-500"></i> Cancel anytime</li>
+                </ul>
+
+                <button class="w-full md:w-auto bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-brand-600/50 transition-all transform hover:-translate-y-1">
+                    Subscribe Now
+                </button>
+            </div>
+            
+            <p class="mt-6 text-sm text-gray-500">New members only. Terms apply.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 bg-gray-950 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <h4 class="font-bold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-brand-500">About Us</a></li>
+                        <li><a href="#" class="hover:text-brand-500">Careers</a></li>
+                        <li><a href="#" class="hover:text-brand-500">Press</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-brand-500">Help Center</a></li>
+                        <li><a href="#" class="hover:text-brand-500">Supported Devices</a></li>
+                        <li><a href="#" class="hover:text-brand-500">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-brand-500">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-brand-500">Terms of Use</a></li>
+                        <li><a href="#" class="hover:text-brand-500">Cookie Preferences</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Download</h4>
+                    <div class="flex flex-col gap-3">
+                        <button class="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 flex items-center gap-3 hover:bg-gray-800 transition-colors">
+                            <i class="fab fa-apple text-xl"></i>
+                            <div class="text-left">
+                                <div class="text-[10px] leading-none text-gray-400">Download on the</div>
+                                <div class="text-sm font-bold leading-none">App Store</div>
+                            </div>
+                        </button>
+                        <button class="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 flex items-center gap-3 hover:bg-gray-800 transition-colors">
+                            <i class="fab fa-google-play text-xl text-brand-500"></i>
+                            <div class="text-left">
+                                <div class="text-[10px] leading-none text-gray-400">Get it on</div>
+                                <div class="text-sm font-bold leading-none">Google Play</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-brand-600 rounded flex items-center justify-center">
+                        <i class="fas fa-play text-white text-[10px]"></i>
+                    </div>
+                    <span class="font-bold">CineStream</span>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    &copy; 2024 CineStream Inc. All rights reserved.
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-600 transition-all"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-600 transition-all"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-600 transition-all"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Modal (Hidden by default) -->
+    <div id="video-modal" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4">
+        <div class="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 rounded-full text-white hover:bg-brand-600 flex items-center justify-center transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="w-full h-full flex items-center justify-center">
+                <p class="text-gray-400">Trailer playback simulation (Video Embed would go here)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-gray-950/90', 'backdrop-blur-md', 'shadow-lg');
+                navbar.classList.remove('py-4');
+                navbar.classList.add('py-2');
+            } else {
+                navbar.classList.remove('bg-gray-950/90', 'backdrop-blur-md', 'shadow-lg', 'py-2');
+                navbar.classList.add('py-4');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMenu() {
+            const isClosed = mobileMenu.classList.contains('translate-x-full');
+            if (isClosed) {
+                mobileMenu.classList.remove('translate-x-full');
+            } else {
+                mobileMenu.classList.add('translate-x-full');
+            }
+        }
+
+        mobileBtn.addEventListener('click', toggleMenu);
+        closeMenuBtn.addEventListener('click', toggleMenu);
+        
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+        // Horizontal Scroll Logic
+        function scrollTrending(amount) {
+            const container = document.getElementById('movie-scroll');
+            container.scrollBy({
+                left: amount,
+                behavior: 'smooth'
+            });
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('video-modal');
+        // Select all play buttons in cards
+        const playButtons = document.querySelectorAll('.movie-card button');
+        
+        playButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card click
+                openModal();
+            });
+        });
+
+        function openModal() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Stop background scrolling
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
